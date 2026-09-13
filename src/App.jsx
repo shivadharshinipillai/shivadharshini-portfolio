@@ -13,10 +13,12 @@ import Mutram from './pages/Mutram'
 import TurkeyMorocco from './pages/TurkeyMorocco'
 import Chitosan from './pages/Chitosan'
 import HelloNift from './pages/HelloNift'
+import ScrollToTop from './components/ScrollToTop'
 
 function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />

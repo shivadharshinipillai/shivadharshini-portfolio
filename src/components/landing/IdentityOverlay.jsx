@@ -10,15 +10,6 @@ export function IdentityOverlay({ phase }) {
       }}
       aria-hidden={!visible}
     >
-      <p
-        className="landing-welcome"
-        style={{
-          opacity: introduced ? 0.85 : 0,
-          transitionDelay: introduced ? '600ms' : '0ms',
-        }}
-      >
-        Welcome to
-      </p>
       <h1
         className="landing-name"
         style={{
@@ -27,10 +18,9 @@ export function IdentityOverlay({ phase }) {
           transitionDelay: introduced ? '750ms' : '0ms',
         }}
       >
-        Shivadharshini
-        <br />
-        R.A.
+        Shivadharshini R.A.
       </h1>
+
       <p
         className="landing-tagline"
         style={{
@@ -38,7 +28,7 @@ export function IdentityOverlay({ phase }) {
           transitionDelay: introduced ? '1000ms' : '0ms',
         }}
       >
-        FASHION TECHNOLOGY &middot; BUSINESS &middot; DIGITAL
+        National Institute of Fashion Technology &middot; B.F.TECH &middot; Interdisciplinary Minor (MFM)
       </p>
     </div>
   )

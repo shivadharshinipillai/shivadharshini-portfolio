@@ -9209,3 +9209,40 @@ button {
   z-index: 0 !important;
 }
 
+
+/* Scroll to top */
+.scroll-to-top {
+  position: fixed;
+  right: 28px;
+  bottom: 28px;
+  width: 44px;
+  height: 44px;
+  z-index: 1000;
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-family: inherit;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: transform 0.25s ease, background 0.25s ease, border-color 0.25s ease;
+}
+
+.scroll-to-top:hover {
+  transform: translateY(-3px);
+  background: rgba(255, 255, 255, 0.22);
+  border-color: rgba(255, 255, 255, 0.9);
+}
+
+@media (max-width: 768px) {
+  .scroll-to-top {
+    right: 18px;
+    bottom: 18px;
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
+}
