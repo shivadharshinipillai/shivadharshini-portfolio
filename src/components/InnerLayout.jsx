@@ -46,9 +46,20 @@ function InnerLayout({ eyebrow, title, children }) {
           </div>
         )}
 
-        <div className="moon">
-          <div className="moon-glow" />
-          <div className="moon-disc" />
+        <div className={`moon-composition${location.pathname === '/contact' ? ' moon-composition--contact' : ''}`}>
+          {location.pathname === '/contact' && (
+            <div className="contact-hedwig" aria-hidden="true">
+              <GreenScreenVideo
+                src="/animations/contact-hedwig-bow.mp4"
+                freezeAt={6.4}
+              />
+            </div>
+          )}
+
+          <div className="moon">
+            <div className="moon-glow" />
+            <div className="moon-disc" />
+          </div>
         </div>
 
         <header className="inner-nav">

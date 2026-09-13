@@ -11,6 +11,8 @@ import Contact from './pages/Contact'
 import GoodMaiden from './pages/GoodMaiden'
 import Mutram from './pages/Mutram'
 import TurkeyMorocco from './pages/TurkeyMorocco'
+import Chitosan from './pages/Chitosan'
+import HelloNift from './pages/HelloNift'
 
 function App() {
   return (
@@ -27,6 +29,8 @@ function App() {
         <Route path="/work/good-maiden" element={<GoodMaiden />} />
         <Route path="/work/mutram" element={<Mutram />} />
         <Route path="/work/turkey-morocco" element={<TurkeyMorocco />} />
+        <Route path="/work/chitosan" element={<Chitosan />} />
+        <Route path="/work/hello-nift" element={<HelloNift />} />
       </Routes>
     </BrowserRouter>
   )

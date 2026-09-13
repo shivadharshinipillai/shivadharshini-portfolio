@@ -1,5 +1,4 @@
 import InnerLayout from '../components/InnerLayout'
-import GreenScreenVideo from '../components/skills/GreenScreenVideo'
 
 function Contact() {
   return (
@@ -8,9 +7,6 @@ function Contact() {
       title="Open to opportunities."
     >
       <div className="contact-editorial">
-        <div className="contact-hedwig" aria-hidden="true">
-          <GreenScreenVideo src="/animations/contact-hedwig-bow.mp4" freezeAt={6.4} />
-        </div>
         <p className="contact-intro">
           Currently developing my skills across fashion, technology
           and business, and looking forward to learning through

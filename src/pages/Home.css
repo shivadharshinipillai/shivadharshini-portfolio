@@ -1,0 +1,342 @@
+/* ==========================================================================
+   Home -- cinematic 3D landing page (React Three Fiber)
+   Scoped to .landing-page and children. The 3D scene itself lives in
+   src/components/landing/*; this file only styles the HTML chrome layered
+   on top of the WebGL canvas (identity text, nav labels, transition
+   curtain, Hedwig easter egg) so all of it stays crisp regardless of
+   camera distance or device pixel ratio.
+   ========================================================================== */
+
+.landing-page {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  background: #0b1728; /* shows briefly if WebGL init is slow */
+  font-family: 'DM Sans', sans-serif;
+}
+
+.landing-canvas {
+  position: absolute;
+  inset: 0;
+}
+
+.landing-canvas canvas {
+  display: block;
+  touch-action: none;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* --------------------------------------------------------------------- */
+/* No-WebGL fallback                                                      */
+/* --------------------------------------------------------------------- */
+
+.landing-static-fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, #3c6690 0%, #b78f68 65%, #f6dfb6 100%);
+}
+
+.landing-static-fallback nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 28px;
+  justify-content: center;
+  max-width: 480px;
+}
+
+.landing-static-fallback a {
+  color: #fff;
+  font-size: 13px;
+  letter-spacing: 0.18em;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+  padding-bottom: 4px;
+}
+
+/* --------------------------------------------------------------------- */
+/* Identity                                                               */
+/* --------------------------------------------------------------------- */
+
+.landing-identity {
+  position: absolute;
+  top: 9%;
+  left: 6%;
+  max-width: 480px;
+  color: #fff;
+  pointer-events: none;
+  transition: opacity 0.6s ease;
+}
+
+.landing-welcome {
+  margin: 0 0 6px;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-style: italic;
+  font-size: 20px;
+  transition: opacity 0.7s ease;
+}
+
+.landing-name {
+  margin: 0;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-weight: 500;
+  font-size: clamp(32px, 4.4vw, 52px);
+  line-height: 1.04;
+  letter-spacing: 0.01em;
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.landing-tagline {
+  margin: 14px 0 0;
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  transition: opacity 0.7s ease;
+}
+
+/* --------------------------------------------------------------------- */
+/* Journey mark + destination hint                                       */
+/* --------------------------------------------------------------------- */
+
+.landing-journey-mark {
+  position: absolute;
+  top: 5.5%;
+  right: 6%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: #fff;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+
+.landing-journey-diamond {
+  width: 26px;
+  height: 26px;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  border-radius: 50%;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.landing-journey-diamond::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 7px;
+  height: 7px;
+  background: rgba(255, 255, 255, 0.85);
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.landing-select-hint {
+  position: absolute;
+  bottom: 6%;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #fff;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-align: center;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+
+.landing-select-hint-line {
+  display: block;
+  width: 1px;
+  height: 22px;
+  margin: 8px auto 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.7), transparent);
+}
+
+/* --------------------------------------------------------------------- */
+/* Hedwig easter egg                                                      */
+/* --------------------------------------------------------------------- */
+
+.landing-hedwig {
+  position: absolute;
+  top: 50%;
+  right: -10px;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+
+.landing-hedwig-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  color: #fff;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-style: italic;
+  font-size: 13px;
+  line-height: 1.3;
+  margin-bottom: 14px;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.25);
+}
+
+.landing-hedwig-video {
+  width: 180px;
+  height: 150px;
+}
+
+/* --------------------------------------------------------------------- */
+/* Transition curtain                                                     */
+/* --------------------------------------------------------------------- */
+
+.landing-curtain {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.landing-curtain-fill {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(255, 246, 224, 0.98) 0%,
+    rgba(255, 226, 176, 0.9) 45%,
+    rgba(255, 214, 160, 0.7) 100%
+  );
+  transition: opacity var(--fill-duration, 700ms) ease;
+}
+
+.landing-curtain-fill.is-active {
+  opacity: 1;
+}
+
+/* Each layer below fades in on its own delayed slice of the same
+   --atmo-duration window, so JS only has to know one number (see
+   Home.jsx's TIMING) and the CSS delays can never drift out of sync
+   with it -- same technique as the original 2D day/night build. */
+.landing-curtain-atmosphere {
+  position: absolute;
+  inset: 0;
+}
+
+.landing-curtain-warm {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background: radial-gradient(
+    circle at 50% 45%,
+    rgba(255, 240, 214, 0.95) 0%,
+    rgba(255, 210, 158, 0.55) 55%,
+    rgba(255, 210, 158, 0) 100%
+  );
+  transition: opacity var(--atmo-duration, 1000ms) ease;
+}
+
+.landing-curtain-atmosphere.is-active .landing-curtain-warm {
+  opacity: 1;
+  transition-delay: 0ms;
+}
+
+/* Matches .night-sky in App.css exactly, so arriving at the destination
+   page reads as a continuation rather than a reset. */
+.landing-curtain-navy {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background: radial-gradient(circle at 78% 18%, rgba(112, 139, 168, 0.18), transparent 24%),
+    radial-gradient(circle at 18% 82%, rgba(67, 92, 122, 0.14), transparent 28%),
+    linear-gradient(145deg, #081321 0%, #0b1728 48%, #111d2d 100%);
+  transition: opacity calc(var(--atmo-duration, 1000ms) * 0.5) ease;
+  transition-delay: calc(var(--atmo-duration, 1000ms) * 0.5);
+}
+
+.landing-curtain-atmosphere.is-active .landing-curtain-navy {
+  opacity: 1;
+}
+
+.landing-curtain-stars {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity calc(var(--atmo-duration, 1000ms) * 0.35) ease;
+  transition-delay: calc(var(--atmo-duration, 1000ms) * 0.7);
+}
+
+.landing-curtain-atmosphere.is-active .landing-curtain-stars {
+  opacity: 1;
+}
+
+.landing-curtain-stars span {
+  position: absolute;
+  left: var(--sx);
+  top: var(--sy);
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: #fff;
+}
+
+/* --------------------------------------------------------------------- */
+/* Mobile                                                                 */
+/* --------------------------------------------------------------------- */
+
+@media (max-width: 800px) {
+  .landing-identity {
+    top: 8%;
+    left: 6%;
+    right: 6%;
+    max-width: none;
+  }
+
+  .landing-journey-mark span:first-child {
+    display: none;
+  }
+
+  .landing-hedwig-copy {
+    display: none;
+  }
+
+  .landing-hedwig {
+    left: auto;
+    right: -18px;
+    bottom: 38%;
+    transform: none;
+    z-index: 3;
+  }
+
+  .landing-hedwig-video {
+    width: 120px;
+    height: 100px;
+    transform: translateY(8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-name,
+  .landing-welcome,
+  .landing-tagline,
+  .landing-identity,
+  .landing-journey-mark,
+  .landing-select-hint,
+  .landing-hedwig {
+    transition-duration: 0.15s !important;
+  }
+}

@@ -1,112 +1,152 @@
-import { useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import GreenScreenVideo from '../components/skills/GreenScreenVideo'
+import { Canvas } from '@react-three/fiber'
+import { Scene } from '../components/landing/Scene'
+import { IdentityOverlay } from '../components/landing/IdentityOverlay'
+import { SectionNav } from '../components/landing/SectionNav'
+import { HedwigPeek } from '../components/landing/HedwigPeek'
+import { TransitionCurtain } from '../components/landing/TransitionCurtain'
+import { useReducedMotion } from '../components/landing/hooks/useReducedMotion'
+import { useViewport } from '../components/landing/hooks/useViewport'
+import { SECTIONS, TIMING, REDUCED_TIMING } from '../data/sections'
+import './Home.css'
+
+// ---------------------------------------------------------------------------
+// Transition state machine
+//
+//   INTRO -> IDLE -> SELECTED -> APPROACHING -> FILLING -> ATMOSPHERE -> NAVIGATING
+//
+// Timing lives in src/data/sections.js so the JS timers here and the CSS
+// transition-durations passed down to TransitionCurtain can never drift
+// out of sync.
+// ---------------------------------------------------------------------------
+const PHASES = {
+  INTRO: 'intro',
+  IDLE: 'idle',
+  SELECTED: 'selected',
+  APPROACHING: 'approaching',
+  FILLING: 'filling',
+  ATMOSPHERE: 'atmosphere',
+  NAVIGATING: 'navigating',
+}
+
+const INTRO_DURATION_MS = 2600
+const INTRO_DURATION_REDUCED_MS = 150
 
 function Home() {
   const navigate = useNavigate()
-  const [selected, setSelected] = useState(null)
-  const [transitioning, setTransitioning] = useState(false)
+  const reducedMotion = useReducedMotion()
+  const { isMobile, hasWebGL } = useViewport()
 
-  const destinations = [
-    { label: 'ABOUT', path: '/about', position: 'cloud-about' },
-    { label: 'WORK', path: '/work', position: 'cloud-work' },
-    { label: 'SKILLS', path: '/skills', position: 'cloud-skills' },
-    { label: 'EXPERIENCE', path: '/experience', position: 'cloud-experience' },
-    { label: 'LEARNING', path: '/learning', position: 'cloud-learning' },
-    { label: 'CONTACT', path: '/contact', position: 'cloud-contact' },
-  ]
+  const [phase, setPhase] = useState(PHASES.INTRO)
+  const [selectedId, setSelectedId] = useState(null)
 
-  const handleDestination = (item) => {
-    if (transitioning) return
+  const phaseRef = useRef(PHASES.INTRO)
+  const timeoutsRef = useRef([])
 
-    setSelected(item.label)
-    setTransitioning(true)
+  const timing = reducedMotion ? REDUCED_TIMING : TIMING
+  const selectedSection = SECTIONS.find((s) => s.id === selectedId) ?? null
 
-    setTimeout(() => {
-      navigate(item.path)
-    }, 1900)
-  }
+  const setPhaseSafe = useCallback((next) => {
+    phaseRef.current = next
+    setPhase(next)
+  }, [])
+
+  // Opening sequence: clouds compose near the centre, then scatter to
+  // their final layout while the identity text reveals (see
+  // CloudDestination + IdentityOverlay). Once settled, the experience
+  // becomes interactive.
+  useEffect(() => {
+    const introMs = reducedMotion ? INTRO_DURATION_REDUCED_MS : INTRO_DURATION_MS
+    const id = window.setTimeout(() => {
+      if (phaseRef.current === PHASES.INTRO) setPhaseSafe(PHASES.IDLE)
+    }, introMs)
+    timeoutsRef.current.push(id)
+    return () => window.clearTimeout(id)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reducedMotion])
+
+  // The full click -> navigate sequence. Rejects any additional selection
+  // while a transition is already running -- the first destination wins.
+  const handleCloudSelect = useCallback(
+    (section) => {
+      if (phaseRef.current !== PHASES.IDLE) return
+
+      setSelectedId(section.id)
+      setPhaseSafe(PHASES.SELECTED)
+
+      const t1 = window.setTimeout(() => {
+        setPhaseSafe(PHASES.APPROACHING)
+
+        const t2 = window.setTimeout(() => {
+          setPhaseSafe(PHASES.FILLING)
+
+          const t3 = window.setTimeout(() => {
+            setPhaseSafe(PHASES.ATMOSPHERE)
+
+            const t4 = window.setTimeout(() => {
+              setPhaseSafe(PHASES.NAVIGATING)
+              navigate(section.path)
+            }, timing.atmosphere + timing.hold)
+            timeoutsRef.current.push(t4)
+          }, timing.fill)
+          timeoutsRef.current.push(t3)
+        }, timing.approach)
+        timeoutsRef.current.push(t2)
+      }, timing.settle)
+      timeoutsRef.current.push(t1)
+    },
+    [navigate, setPhaseSafe, timing]
+  )
+
+  useEffect(() => {
+    return () => {
+      timeoutsRef.current.forEach((id) => window.clearTimeout(id))
+    }
+  }, [])
+
+  const isTransitioning = phase !== PHASES.IDLE && phase !== PHASES.INTRO
+  const selectedLabel = selectedSection?.label
 
   return (
-    <main className={`home-page ${transitioning ? 'is-transitioning' : ''}`}>
-      <section className="home-hero">
-
-        <div className="home-sky-glow" />
-
-        {/* CLOUD NAVIGATION */}
-        <div className="home-clouds">
-          {destinations.map((item) => (
-            <button
-              key={item.label}
-              type="button"
-              className={`home-cloud ${item.position} ${
-                selected === item.label ? 'is-selected' : ''
-              }`}
-              onClick={() => handleDestination(item)}
-              aria-label={`Go to ${item.label}`}
-              disabled={transitioning}
-            >
-              <span className="cloud-shape">
-                <span />
-                <span />
-                <span />
-              </span>
-
-              <strong>{item.label}</strong>
-            </button>
-          ))}
-        </div>
-
-        {/* CENTRE IDENTITY */}
-        <div className="home-copy">
-
-          <div className="home-institution">
-            
-            <span>NATIONAL INSTITUTE OF FASHION TECHNOLOGY</span>
-            <span>BBSR,ODISHA</span>
-          </div>
-
-          <h1>
-            SHIVADHARSHINI R.A
-            <br />
-            <em></em>
-          </h1>
-
-          <div className="home-journey">
-            <span>B.F.TECH Fourth Year </span>
-            <i />
-          </div>
-
-        </div>
-
-        {/* PLANE */}
-        <div
-          className={`home-plane ${
-            selected ? `plane-to-${selected.toLowerCase()}` : ''
-          }`}
-          aria-hidden="true"
+    <main className="landing-page" data-phase={phase}>
+      {hasWebGL ? (
+        <Canvas
+          className="landing-canvas"
+          dpr={isMobile ? [1, 1.5] : [1, 2]}
+          camera={{ position: [0, 0.35, 7.2], fov: isMobile ? 55 : 45, near: 0.1, far: 100 }}
+          gl={{ antialias: true, alpha: false }}
         >
-          <div className="plane-body" />
-          <div className="plane-wing plane-wing-left" />
-          <div className="plane-wing plane-wing-right" />
-          <div className="plane-tail" />
-        </div>
-
-        {/* HEDWIG — PEEKING FROM RIGHT EDGE */}
-        <div className="home-hedwig-peek" aria-hidden="true">
-          <GreenScreenVideo
-            src="/animations/home-hedwig-peek.mp4"
+          <Scene
+            phase={phase}
+            selectedSection={selectedSection}
+            reducedMotion={reducedMotion}
+            isMobile={isMobile}
+            onCloudSelect={handleCloudSelect}
           />
+        </Canvas>
+      ) : (
+        // No-WebGL fallback: a static golden-hour gradient with plain
+        // accessible links, so the site still works everywhere.
+        <div className="landing-static-fallback">
+          <nav aria-label="Portfolio destinations">
+            {SECTIONS.map((section) => (
+              <a key={section.id} href={section.path}>
+                {section.label}
+              </a>
+            ))}
+          </nav>
         </div>
+      )}
 
-        {/* TRANSITION */}
-        <div
-          className={`home-night-wash ${
-            transitioning ? 'is-visible' : ''
-          }`}
-        />
+      <IdentityOverlay phase={phase} />
+      <SectionNav phase={phase} />
+      <HedwigPeek phase={phase} />
+      <TransitionCurtain phase={phase} timing={timing} />
 
-      </section>
+      <div className="sr-only" role="status" aria-live="polite">
+        {isTransitioning && selectedLabel ? `Flying to ${selectedLabel}` : ''}
+      </div>
     </main>
   )
 }

@@ -29,10 +29,32 @@ const projects = [
     status: 'PROJECT',
     path: '/work/turkey-morocco',
   },
+  {
+    number: '04',
+    category: 'SUSTAINABILITY · TEXTILE RESEARCH',
+    title: 'Chitosan Fibre',
+    description:
+      'Research exploring chitosan fibre, its composition and processing, and its potential role in sustainable textile production.',
+    status: 'RESEARCH ARTICLE',
+    path: '/work/chitosan',
+  },
+  {
+    number: '05',
+    category: 'PRODUCT DEVELOPMENT · APP DEVELOPMENT',
+    title: 'Hello NIFT',
+    description:
+      'A campus-focused digital product developed to explore a more connected and useful student experience at NIFT.',
+    status: 'LIVE PROTOTYPE',
+    path: '/work/hello-nift',
+  },
 ]
 
 function Work() {
   const navigate = useNavigate()
+
+  const handleProjectClick = (project) => {
+    navigate(project.path)
+  }
 
   return (
     <InnerLayout
@@ -49,7 +71,7 @@ function Work() {
           <button
             key={project.number}
             className="project-card"
-            onClick={() => navigate(project.path)}
+            onClick={() => handleProjectClick(project)}
           >
             <div className="project-number">
               {project.number}
